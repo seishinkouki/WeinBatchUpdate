@@ -1,0 +1,328 @@
+<!--
+  Main application window for the Weintek Batch Update Tool.
+
+  Layout (top to bottom):
+  1. Custom title-bar area (extends into OS title bar) with drag region and language ToggleButton
+  2. Target device IP list input
+  3. Credentials (username / password)
+  4. Firmware file picker with browse button
+  5. Max concurrency selector and Start button
+  6. DataGrid showing per-device status, progress, and retry buttons
+  7. Summary bar (total / completed counts)
+
+  Localization uses {ext:Loc Key=...} markup extension backed by LocalizationService.
+-->
+<Window x:Class="WeinBatchUpdate.Views.MainWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:ext="using:WeinBatchUpdate.Extensions"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="using:WeinBatchUpdate.Models"
+        xmlns:vm="using:WeinBatchUpdate.ViewModels"
+
+        Title="{ext:Loc Key=WeinBatchUpdate}"
+        Width="400"
+        d:DesignHeight="450"
+        d:DesignWidth="300"
+        x:DataType="vm:MainWindowViewModel"
+
+        CanMaximize="False"
+        CanMinimize="True"
+        CanResize="False"
+        ExtendClientAreaToDecorationsHint="True"
+        Icon="/Assets/download.ico"
+        SizeToContent="Height"
+        mc:Ignorable="d">
+
+    <!--
+      Hide maximize, restore, and fullscreen buttons by shrinking them to zero width.
+      The only native button remaining in the title bar is the Close button.
+    -->
+    <Window.Styles>
+        <Style Selector="WindowDrawnDecorations /template/ Button#PART_MaximizeButton">
+            <Setter Property="Width" Value="0" />
+        </Style>
+        <Style Selector="WindowDrawnDecorations /template/ Button#PART_RestoreButton">
+            <Setter Property="Width" Value="0" />
+        </Style>
+        <Style Selector="WindowDrawnDecorations /template/ Button#PART_FullScreenButton">
+            <Setter Property="Width" Value="0" />
+        </Style>
+    </Window.Styles>
+
+    <!-- Design-time DataContext for the XAML previewer -->
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <DockPanel>
+        <!-- ═══ Custom title-bar area (extended into OS title bar) ═══ -->
+        <Grid Height="32" DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <!-- Left column: transparent drag region for moving the window -->
+                <ColumnDefinition Width="*" />
+                <!-- Right column: language toggle button -->
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Draggable title-bar area (transparent so native title bar shows through) -->
+            <Border Background="Transparent" PointerPressed="TitleBar_PointerPressed" />
+
+            <!-- Language ToggleButton: 🇨🇳 Chinese / 🇺🇸 English -->
+            <ToggleButton Grid.Column="1"
+                          Width="36" Height="28"
+                          Margin="0,0,64,0"
+                          Padding="0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          IsChecked="{Binding IsEnglish}"
+                          ToolTip.Tip="{ext:Loc Key=Language}">
+                <TextBlock FontSize="16"
+                           HorizontalAlignment="Center"
+                           Text="{Binding LanguageFlag}" />
+            </ToggleButton>
+        </Grid>
+
+        <!-- ═══ Main content area ═══ -->
+        <Grid Margin="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" /> <!-- 0: target devices label    -->
+                <RowDefinition Height="Auto" /> <!-- 1: target devices textarea -->
+                <RowDefinition Height="Auto" /> <!-- 2: username / password     -->
+                <RowDefinition Height="Auto" /> <!-- 3: firmware file picker    -->
+                <RowDefinition Height="Auto" /> <!-- 4: concurrency + start     -->
+                <RowDefinition Height="Auto" /> <!-- 5: (reserved / spacer)     -->
+                <RowDefinition Height="*" />    <!-- 6: DataGrid               -->
+                <RowDefinition Height="Auto" /> <!-- 7: summary bar            -->
+            </Grid.RowDefinitions>
+
+            <!-- Row 0: Target devices label -->
+            <TextBlock Grid.Row="0"
+                       Margin="0,0,0,4"
+                       Text="{ext:Loc Key=TargetDevices}" />
+
+            <!-- Row 1: Target devices text input (multi-line) -->
+            <TextBox Grid.Row="1"
+                     Height="120"
+                     Margin="0,0,0,4"
+                     Padding="4"
+                     VerticalContentAlignment="Top"
+                     AcceptsReturn="True"
+                     Text="{Binding TargetsText}" />
+
+            <!-- Row 2: Credentials -->
+            <Grid Grid.Row="2" Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Margin="0,0,10,0"
+                           VerticalAlignment="Center"
+                           Text="{ext:Loc Key=Username}" />
+
+                <TextBox Grid.Column="1"
+                         Width="70"
+                         Text="{Binding UserName}" />
+
+                <TextBlock Grid.Column="2"
+                           Margin="15,0,10,0"
+                           VerticalAlignment="Center"
+                           Text="{ext:Loc Key=Password}" />
+
+                <TextBox Grid.Column="3"
+                         PasswordChar="●"
+                         Text="{Binding Password, Mode=TwoWay}" />
+            </Grid>
+
+            <!-- Row 3: Firmware file picker -->
+            <Grid Grid.Row="3" Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Margin="0,0,10,0"
+                           VerticalAlignment="Center"
+                           Text="{ext:Loc Key=FirmwareFile}" />
+
+                <TextBox Grid.Column="1"
+                         IsReadOnly="True"
+                         Text="{Binding FirmwareFile}" />
+
+                <Button Grid.Column="2"
+                        Width="80"
+                        Margin="8,0,0,0"
+                        Click="BrowseButton_Click"
+                        Content="{ext:Loc Key=Browse}" />
+            </Grid>
+
+            <!-- Row 4: Max concurrency + Start button -->
+            <Grid Grid.Row="4" Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Margin="0,0,10,0"
+                           VerticalAlignment="Center"
+                           Text="{ext:Loc Key=MaxConcurrency}" />
+
+                <NumericUpDown Grid.Column="1"
+                               FormatString="0"
+                               Maximum="16"
+                               Minimum="1"
+                               Value="{Binding MaxConcurrency}" />
+
+                <Button Grid.Column="2"
+                        Width="80"
+                        Margin="8,0,0,0"
+                        Command="{Binding StartCommand}"
+                        Content="{ext:Loc Key=Start}" />
+            </Grid>
+
+            <!-- Row 6: Device status DataGrid -->
+            <DataGrid Grid.Row="6"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      AutoGenerateColumns="False"
+                      CanUserReorderColumns="False"
+                      CanUserResizeColumns="False"
+                      CanUserSortColumns="False"
+                      GridLinesVisibility="None"
+                      IsReadOnly="True"
+                      ItemsSource="{Binding Devices}">
+
+                <!-- Visual styling: remove borders, selection highlights, and sort icons -->
+                <DataGrid.Resources>
+                    <x:Double x:Key="DataGridCellVisualStrokeThickness">0</x:Double>
+                    <x:Double x:Key="DataGridGridLineThickness">0</x:Double>
+                    <Thickness x:Key="DataGridColumnHeaderPadding">0 0 0 0</Thickness>
+                    <SolidColorBrush x:Key="DataGridColumnHeaderPointeroverBackground" Color="Transparent" />
+                    <SolidColorBrush x:Key="DataGridColumnHeaderPressedBackground" Color="Transparent" />
+                    <SolidColorBrush x:Key="DataGridRowPointeroverBackground" Color="Transparent" />
+                    <SolidColorBrush x:Key="DataGridRowSelectedBackground" Color="Transparent" />
+                    <SolidColorBrush x:Key="DataGridRowSelectedPointeroverBackground" Color="Transparent" />
+                </DataGrid.Resources>
+
+                <DataGrid.Styles>
+                    <!-- Left-align column headers -->
+                    <Style Selector="DataGridColumnHeader">
+                        <Setter Property="HorizontalContentAlignment" Value="Left" />
+                    </Style>
+                    <!-- Hide sort direction icon -->
+                    <Style Selector="DataGridColumnHeader /template/ PathIcon#SortIcon">
+                        <Setter Property="IsVisible" Value="False" />
+                    </Style>
+                </DataGrid.Styles>
+
+                <DataGrid.Columns>
+                    <!-- IP column -->
+                    <DataGridTemplateColumn Width="Auto" MinWidth="90">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{ext:Loc Key=IP}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:DeviceUpdateStatus">
+                                <TextBlock Margin="0,2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding Ip}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Status column (with error-detail tooltip) -->
+                    <DataGridTemplateColumn Width="Auto" MinWidth="50">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{ext:Loc Key=Status}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:DeviceUpdateStatus">
+                                <TextBlock HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding Status}">
+                                    <!-- Show detailed message on hover if non-empty -->
+                                    <ToolTip.Tip>
+                                        <TextBlock IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                   Text="{Binding Message}" />
+                                    </ToolTip.Tip>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Progress column (bar + percentage overlay) -->
+                    <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{ext:Loc Key=Progress}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:DeviceUpdateStatus">
+                                <Grid Margin="0,0,10,0" VerticalAlignment="Center">
+                                    <ProgressBar Height="20"
+                                                 MinWidth="60"
+                                                 Margin="2,0,2,0"
+                                                 Classes.CanRetry="{Binding CanRetry}"
+                                                 Maximum="1"
+                                                 Minimum="0"
+                                                 Value="{Binding Progress}">
+                                        <ProgressBar.Styles>
+                                            <!-- Red-tinted bar when retryable (failed) -->
+                                            <Style Selector="ProgressBar.CanRetry">
+                                                <Setter Property="Foreground" Value="#FFFFA0A0" />
+                                            </Style>
+                                        </ProgressBar.Styles>
+                                    </ProgressBar>
+                                    <!-- Percentage text overlay -->
+                                    <TextBlock HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontSize="11"
+                                               Text="{Binding Progress, StringFormat={}{0:P0}}" />
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Action column (Retry button) -->
+                    <DataGridTemplateColumn Width="Auto" MinWidth="40">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{ext:Loc Key=Action}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:DeviceUpdateStatus">
+                                <Button Height="20"
+                                        MinHeight="20"
+                                        Padding="4,0,4,0"
+                                        HorizontalAlignment="Left"
+                                        Command="{Binding RetryCommand}"
+                                        Content="{ext:Loc Key=Retry}"
+                                        FontWeight="Light"
+                                        IsEnabled="{Binding CanRetry}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Row 7: Summary bar -->
+            <StackPanel Grid.Row="7"
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                <TextBlock VerticalAlignment="Center" Text="{ext:Loc Key=Total}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding TotalCount}" />
+                <TextBlock VerticalAlignment="Center" Text="{ext:Loc Key=Completed}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding CompletedCount}" />
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</Window>
