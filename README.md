@@ -1,4 +1,4 @@
-# WeinBatchUpdate — Weintek cMT X HMI Batch Firmware Upgrade Tool
+# WeinBatchUpdate — Weintek cMT X HMI Batch Firmware Upgrade Tool [中文](README_zh.md)
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![.NET](https://img.shields.io/badge/.NET-10.0-blueviolet)
