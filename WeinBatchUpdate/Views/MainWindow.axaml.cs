@@ -40,7 +40,7 @@ namespace WeinBatchUpdate.Views
         }
 
         /// <summary>
-        /// Opens the OS file-picker dialog for selecting a Weintek firmware file (<c>.exob</c>).
+        /// Opens the OS file-picker dialog for selecting a Weintek firmware file (<c>.cxob</c>).
         /// The selected file path is written to <see cref="MainWindowViewModel.FirmwareFile"/>.
         /// </summary>
         private async void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -58,7 +58,7 @@ namespace WeinBatchUpdate.Views
                     {
                         new(LocalizationService.Instance["FirmwareFileName"])
                         {
-                            Patterns = ["*.exob"]
+                            Patterns = ["*.cxob"]
                         },
                     }
                 });

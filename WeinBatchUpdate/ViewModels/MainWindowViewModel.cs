@@ -118,7 +118,7 @@ namespace WeinBatchUpdate.ViewModels
             (StartCommand as IAsyncRelayCommand)?.NotifyCanExecuteChanged();
 
         /// <summary>
-        /// Full local path to the selected firmware file (<c>.exob</c>).
+        /// Full local path to the selected firmware file (<c>.cxob</c>).
         /// Set by the file-picker dialog in <see cref="Views.MainWindow"/>.
         /// </summary>
         [ObservableProperty]
@@ -302,7 +302,7 @@ namespace WeinBatchUpdate.ViewModels
         /// <param name="ips">List of target device IP addresses.</param>
         /// <param name="user">Admin username.</param>
         /// <param name="pass">Admin password.</param>
-        /// <param name="file">Local path to the firmware <c>.exob</c> file.</param>
+        /// <param name="file">Local path to the firmware <c>.cxob</c> file.</param>
         /// <param name="maxConcurrency">Maximum concurrent update tasks.</param>
         public async Task RunBatchWithLimit(
             List<string> ips, string? user, string? pass, string? file, int maxConcurrency)

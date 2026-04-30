@@ -21,7 +21,7 @@ namespace WeinBatchUpdate
     ///   <item>Fetch RSA public key from the device</item>
     ///   <item>Authenticate with encrypted credentials</item>
     ///   <item>Reset the project environment</item>
-    ///   <item>Upload the firmware file (<c>.exob</c>) via multipart POST</item>
+    ///   <item>Upload the firmware file (<c>.cxob</c>) via multipart POST</item>
     ///   <item>Trigger server-side decompression</item>
     ///   <item>Reboot the device</item>
     ///   <item>Restore device services</item>
@@ -110,7 +110,7 @@ namespace WeinBatchUpdate
         /// </summary>
         /// <param name="user">Admin username for the HMI web interface.</param>
         /// <param name="pass">Admin password.</param>
-        /// <param name="localPath">Local path to the firmware file (<c>.exob</c>).</param>
+        /// <param name="localPath">Local path to the firmware file (<c>.cxob</c>).</param>
         /// <returns><c>true</c> if all stages completed successfully; <c>false</c> otherwise.</returns>
         public async Task<bool> ExecuteFullUpdateAsync(string? user, string? pass, string? localPath)
         {
