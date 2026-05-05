@@ -14,7 +14,7 @@
 
 WeinBatchUpdate is a Windows desktop application for performing **batch firmware upgrades on multiple Weintek cMT X series HMIs simultaneously over the network**.
 
-Say goodbye to upgrading devices one by one through the web interface — simply paste a list of IP addresses, select a firmware file (`.exob`), and click Start. The tool handles authentication, upload, decompression, and reboot for all target devices with parallel processing.
+Say goodbye to upgrading devices one by one through the web interface — simply paste a list of IP addresses, select a firmware file (`.cxob`), and click Start. The tool handles authentication, upload, decompression, and reboot for all target devices with parallel processing.
 
 Built with:
 - [Avalonia UI 12](https://avaloniaui.net/) — cross-platform desktop UI framework
@@ -49,7 +49,7 @@ The application communicates with each HMI device over HTTP via the device's bui
 1. **Get public key** — retrieves the RSA public key from the HMI for credential encryption
 2. **Login** — sends RSA-encrypted username/password to obtain a Bearer token
 3. **Prepare environment** — resets the project environment on the device
-4. **Upload firmware** — POSTs the `.exob` file as multipart form data
+4. **Upload firmware** — POSTs the `.cxob` file as multipart form data
 5. **Decompress firmware** — triggers server-side decompression of the uploaded file
 6. **Restart device** — reboots the HMI to apply the new firmware
 7. **Restore services** — restarts device services after reboot
@@ -68,7 +68,7 @@ The application communicates with each HMI device over HTTP via the device's bui
    192.168.1.3:80
    ```
 4. **Enter credentials** — the default username is `admin`.
-5. **Select firmware file** — click **Browse** and choose a `.exob` firmware file.
+5. **Select firmware file** — click **Browse** and choose a `.cxob` firmware file.
 6. **Set concurrency** — adjust the number of devices to update simultaneously (1–16).
 7. **Start** — click the **Start** button to begin the batch update.
 8. **Monitor progress** — watch the DataGrid for per-device status, progress bars, and logs.
