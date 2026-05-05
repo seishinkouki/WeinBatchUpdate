@@ -5,6 +5,17 @@
        For more details visit https://learn.microsoft.com/en-us/windows/win32/sbscs/application-manifests -->
   <assemblyIdentity version="1.0.0.0" name="WeinBatchUpdate.Desktop"/>
 
+  <!-- Explicitly set asInvoker to prevent Windows Installer Detection heuristics
+       from triggering a UAC elevation prompt. The executable name "WeinBatchUpdate"
+       contains the word "Update", which Windows treats as an installer keyword. -->
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+    <security>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
     <application>
       <!-- A list of the Windows versions that this application has been tested on
