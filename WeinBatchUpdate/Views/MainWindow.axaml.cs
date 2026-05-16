@@ -11,13 +11,24 @@ namespace WeinBatchUpdate.Views
 {
     /// <summary>
     /// Code-behind for the main application window.
-    /// Handles window dragging in the custom title bar and file-picker dialog.
+    /// Handles window dragging in the custom title bar, file-picker dialog,
+    /// and runtime Mica/Acrylic backdrop detection.
     /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+
+            // Apply Mica backdrop on Windows 11, fall back to AcrylicBlur on Windows 10.
+            if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000))
+            {
+                TransparencyLevelHint = [WindowTransparencyLevel.Mica, WindowTransparencyLevel.AcrylicBlur];
+            }
+            else
+            {
+                TransparencyLevelHint = [WindowTransparencyLevel.AcrylicBlur, WindowTransparencyLevel.Blur];
+            }
 
             // Clamp the window maximum height to the current screen height,
             // preventing the DataGrid from causing the window to extend beyond

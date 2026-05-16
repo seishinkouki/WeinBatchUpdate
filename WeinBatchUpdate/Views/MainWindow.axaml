@@ -1,16 +1,16 @@
 <!--
-  Main application window for the Weintek Batch Update Tool.
-
-  Layout (top to bottom):
-  1. Custom title-bar area (extends into OS title bar) with drag region and language ToggleButton
-  2. Target device IP list input
-  3. Credentials (username / password)
-  4. Firmware file picker with browse button
-  5. Max concurrency selector and Start button
-  6. DataGrid showing per-device status, progress, and retry buttons
-  7. Summary bar (total / completed counts)
-
-  Localization uses {ext:Loc Key=...} markup extension backed by LocalizationService.
+    Main application window for the Weintek Batch Update Tool.
+    
+    Layout (top to bottom):
+    1. Custom title-bar area (extends into OS title bar) with drag region and language ToggleButton
+    2. Target device IP list input
+    3. Credentials (username / password)
+    4. Firmware file picker with browse button
+    5. Max concurrency selector and Start button
+    6. DataGrid showing per-device status, progress, and retry buttons
+    7. Summary bar (total / completed counts)
+    
+    Localization uses {ext:Loc Key=...} markup extension backed by LocalizationService.
 -->
 <Window x:Class="WeinBatchUpdate.Views.MainWindow"
         xmlns="https://github.com/avaloniaui"
@@ -26,18 +26,19 @@
         d:DesignHeight="450"
         d:DesignWidth="300"
         x:DataType="vm:MainWindowViewModel"
-
+        Background="Transparent"
         CanMaximize="False"
         CanMinimize="True"
         CanResize="False"
         ExtendClientAreaToDecorationsHint="True"
         Icon="/Assets/download.ico"
         SizeToContent="Height"
+        TransparencyLevelHint="Mica,AcrylicBlur,Blur"
         mc:Ignorable="d">
 
     <!--
-      Hide maximize, restore, and fullscreen buttons by shrinking them to zero width.
-      The only native button remaining in the title bar is the Close button.
+        Hide maximize, restore, and fullscreen buttons by shrinking them to zero width.
+        The only native button remaining in the title bar is the Close button.
     -->
     <Window.Styles>
         <Style Selector="WindowDrawnDecorations /template/ Button#PART_MaximizeButton">
@@ -50,7 +51,11 @@
             <Setter Property="Width" Value="0" />
         </Style>
     </Window.Styles>
-
+    <Window.Resources>
+        <ResourceDictionary>
+            <SolidColorBrush x:Key="TitleBarBackground" Color="Transparent" />
+        </ResourceDictionary>
+    </Window.Resources>
     <!-- Design-time DataContext for the XAML previewer -->
     <Design.DataContext>
         <vm:MainWindowViewModel />
@@ -71,7 +76,8 @@
 
             <!-- Language ToggleButton: 🇨🇳 Chinese / 🇺🇸 English -->
             <ToggleButton Grid.Column="1"
-                          Width="36" Height="28"
+                          Width="36"
+                          Height="28"
                           Margin="0,0,64,0"
                           Padding="0"
                           HorizontalAlignment="Center"
@@ -80,8 +86,8 @@
                           BorderThickness="0"
                           IsChecked="{Binding IsEnglish}"
                           ToolTip.Tip="{ext:Loc Key=Language}">
-                <TextBlock FontSize="16"
-                           HorizontalAlignment="Center"
+                <TextBlock HorizontalAlignment="Center"
+                           FontSize="16"
                            Text="{Binding LanguageFlag}" />
             </ToggleButton>
         </Grid>
@@ -89,14 +95,22 @@
         <!-- ═══ Main content area ═══ -->
         <Grid Margin="8">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" /> <!-- 0: target devices label    -->
-                <RowDefinition Height="Auto" /> <!-- 1: target devices textarea -->
-                <RowDefinition Height="Auto" /> <!-- 2: username / password     -->
-                <RowDefinition Height="Auto" /> <!-- 3: firmware file picker    -->
-                <RowDefinition Height="Auto" /> <!-- 4: concurrency + start     -->
-                <RowDefinition Height="Auto" /> <!-- 5: (reserved / spacer)     -->
-                <RowDefinition Height="*" />    <!-- 6: DataGrid               -->
-                <RowDefinition Height="Auto" /> <!-- 7: summary bar            -->
+                <RowDefinition Height="Auto" />
+                <!-- 0: target devices label -->
+                <RowDefinition Height="Auto" />
+                <!-- 1: target devices textarea -->
+                <RowDefinition Height="Auto" />
+                <!-- 2: username / password -->
+                <RowDefinition Height="Auto" />
+                <!-- 3: firmware file picker -->
+                <RowDefinition Height="Auto" />
+                <!-- 4: concurrency + start -->
+                <RowDefinition Height="Auto" />
+                <!-- 5: (reserved / spacer) -->
+                <RowDefinition Height="*" />
+                <!-- 6: DataGrid -->
+                <RowDefinition Height="Auto" />
+                <!-- 7: summary bar -->
             </Grid.RowDefinitions>
 
             <!-- Row 0: Target devices label -->
@@ -251,8 +265,7 @@
                                            Text="{Binding Status}">
                                     <!-- Show detailed message on hover if non-empty -->
                                     <ToolTip.Tip>
-                                        <TextBlock IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                   Text="{Binding Message}" />
+                                        <TextBlock IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Text="{Binding Message}" />
                                     </ToolTip.Tip>
                                 </TextBlock>
                             </DataTemplate>
